@@ -8,17 +8,26 @@ using System.IO;
 
 public class XmlManagerScript : MonoBehaviour
 {
+    public static XmlManagerScript Instance;
+    
     public List<Vector3> cubePositions;
 
-    public File XMLfile; 
+    public string XMLfile; 
     
     public CubeDatabase cubeDB;
 
     public DatabaseDatabase dataDB;
     // Start is called before the first frame update
+
+    void Awake()
+    {
+        Instance = this;
+        DontDestroyOnLoad(this.gameObject);
+    }
+
     void Start()
     {
-        
+        ImportXML();
     }
 
     // Update is called once per frame
@@ -26,14 +35,33 @@ public class XmlManagerScript : MonoBehaviour
     {
         
     }
-    
+
+    public List<Vector3> GetCubePositions()
+    {
+        List<Vector3> cubePositionsFromXML = new List<Vector3>();
+
+        int numberOfDatabases = dataDB.listOfDatabases.Count;
+
+        int whichDatabase = (Random.Range(0, numberOfDatabases));
+
+        foreach (var standInCube in dataDB.listOfDatabases[whichDatabase].listOfCubes)
+        {
+            Vector3 cubePos = new Vector3(standInCube.xPos, standInCube.yPos, standInCube.zPos);
+            cubePositionsFromXML.Add(cubePos);
+
+        }
+        
+        return cubePositionsFromXML;
+    }
+
+
     public void ImportXML()
     {
         //CreateAndFillCubeClass();
         
-        XmlSerializer newXML = new XmlSerializer(typeof(DatabaseDatabase));
-        FileStream stream = new FileStream(XMLfile, FileMode.Create);
-        newXML.Serialize(stream, dataDB);
+        XmlSerializer importedXML = new XmlSerializer(typeof(DatabaseDatabase));
+        FileStream stream = new FileStream(Application.dataPath + "/XML/cubeData.xml", FileMode.Open);
+        dataDB = importedXML.Deserialize(stream) as DatabaseDatabase;
         stream.Close();
     }
     

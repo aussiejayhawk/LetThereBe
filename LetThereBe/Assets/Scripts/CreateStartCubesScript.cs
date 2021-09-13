@@ -6,16 +6,20 @@ public class CreateStartCubesScript : MonoBehaviour
 {
     public CubeManagerScript cubeManager;
     public PowerCubeScript cubePrefab;
-    public XmlManagerScript XmlManager;
+    //public XmlManagerScript XmlManager;
     
-    void Start()
+    IEnumerator Start()
     {
+        yield return new WaitForSeconds(0.1f);
         CreateCubes();
+        Debug.Log("Start Function is running on Create Cubes Script");
     }
 
-    void CreateCubes()
+    public void CreateCubes()
     {
-        foreach (var cubePos in XmlManager.cubePositions)
+        List<Vector3> randomCubeLayout = XmlManagerScript.Instance.GetCubePositions();
+        
+        foreach (var cubePos in randomCubeLayout)
         {
             PowerCubeScript newCube = Instantiate(cubePrefab, cubePos,
                 Random.rotation, transform);
